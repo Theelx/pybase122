@@ -59,7 +59,6 @@ def encode(rawData):
     return outData
 
 def decode(strData):
-# strData = typeof(base122Data) == 'string' ? base122Data : utf8DataToString(base122Data)
     decoded = []
     decodedIndex = curByte = bitOfByte = 0
 
