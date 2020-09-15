@@ -2,9 +2,6 @@
 kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
 kShortened = 0b111 # last two-byte char encodes <= 7 bits
 
-def rshift(val, n):
-    return (val % 0x100000000) >> n
-
 def encode(rawData):
     if isinstance(rawData, str):
         rawData = bytearray(rawData, 'UTF-8')
@@ -19,7 +16,7 @@ def encode(rawData):
         if curIndex >= len(rawData):
             return False
         firstByte = rawData[curIndex]
-        firstPart = (rshift(0b11111110, curBit) & firstByte) << curBit
+        firstPart = (((0b11111110 % 0x100000000) >> curBit) & firstByte) << curBit
         firstPart >>= 1
         curBit += 7
         if curBit < 8:
@@ -29,7 +26,7 @@ def encode(rawData):
         if curIndex >= len(rawData):
             return firstPart
         secondByte = rawData[curIndex]
-        secondPart = (rshift(0xFF00, curBit) & secondByte) & 0xFF
+        secondPart = (((0xFF00 % 0x100000000) >> curBit) & secondByte) & 0xFF
         secondPart >>= 8 - curBit
         return firstPart | secondPart
 
@@ -63,7 +60,7 @@ def decode(strData):
     def push7(byte):
         nonlocal curByte, bitOfByte, decoded
         byte <<= 1
-        curByte |= rshift(byte, bitOfByte)
+        curByte |= (byte % 0x100000000) >> bitOfByte
         bitOfByte += 7
         if bitOfByte >= 8:
             decoded.append(curByte)
