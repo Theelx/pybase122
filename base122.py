@@ -83,6 +83,3 @@ def decode(strData):
         else:
             push7(c)
     return ''.join([chr(letter) for letter in decoded])
-
-rawData = 'hi can i have hugs'
-print(decode(encode(rawData)))
