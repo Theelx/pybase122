@@ -1,8 +1,6 @@
-kString = 0
-kUint8Array = 1
-kDebug = False
+# null, newline, carriage return, double quote, ampersand, backslash
 kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
-kShortened = 0b111
+kShortened = 0b111 # last two-byte char encodes <= 7 bits
 
 def rshift(val, n):
     return (val % 0x100000000) >> n
@@ -14,7 +12,7 @@ def encode(rawData):
         raise TypeError("rawData must be a string!")
     curIndex = curBit = 0
     curMask = b'0b10000000'
-    outData = []
+    outData = bytearray()
 
     def get7():
         nonlocal curIndex, curMask, rawData, curBit
