@@ -69,6 +69,8 @@ def decode(strData):
 
     for i in range(len(strData)):
         c = strData[i]
+        if not isinstance(c, int):
+            raise TypeError("You can only decode an encoded string!")
         if c > 127:
             illegalIndex = rshift(c, 8) & 7
             if illegalIndex != kShortened:
