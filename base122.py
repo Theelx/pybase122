@@ -1,14 +1,21 @@
+import base64 # for converting b64 strings to b122
+import sys
+
+PY2 = (sys.version_info[0] == 2)
 # null, newline, carriage return, double quote, ampersand, backslash
 kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
 kShortened = 0b111 # last two-byte char encodes <= 7 bits
 
-def encode(rawData):
+
+def encode(rawData, warnings=True):
+    if PY2 and warnings:
+        raise NotImplementedError("This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False.")
     if isinstance(rawData, str):
         rawData = bytearray(rawData, 'UTF-8')
     else:
         raise TypeError("rawData must be a string!")
     curIndex = curBit = 0
-    curMask = b'0b10000000'
+    curMask = 0b10000000
     outData = bytearray()
 
     def get7():
@@ -53,7 +60,9 @@ def encode(rawData):
         outData.extend([b1, b2])
     return outData
 
-def decode(strData):
+def decode(strData, warnings=True):
+    if PY2 and warnings:
+        raise NotImplementedError("This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False.")
     decoded = []
     decodedIndex = curByte = bitOfByte = 0
 
@@ -79,3 +88,7 @@ def decode(strData):
         else:
             push7(c)
     return ''.join([chr(letter) for letter in decoded])
+
+# helper function for people already storing data in base64
+def encodeFromBase64(base64str):
+    return encode(base64.b64decode(base64str))
