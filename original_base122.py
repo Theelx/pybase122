@@ -1,3 +1,7 @@
+###################################################
+# THIS SHOULD NOT BE USED ANYMORE BECAUSE THE OTHER ONE IS ALMOST 2X FASTER
+###################################################
+
 import base64  # for converting b64 strings to b122
 import sys
 
