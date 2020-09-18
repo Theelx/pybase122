@@ -31,8 +31,7 @@ def encode(rawData, warnings=True):
         if curIndex >= rawDataLen:
             return firstPart
         secondByte = rawData[curIndex]
-        secondPart = (((0xFF00 % 0x100000000) >> curBit) & secondByte) & 0xFF
-        secondPart >>= 8 - curBit
+        secondPart = ((((0xFF00 % 0x100000000) >> curBit) & secondByte) & 0xFF) >> (8 - curBit)
         return firstPart | secondPart
 
     while True:
