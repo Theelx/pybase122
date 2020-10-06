@@ -20,13 +20,13 @@ The pybase122.pyx is much faster when compiled with Cython 3.0a6 vs the normal s
 180 bytes
 ```
 Python 3.8.3 | Cython 3.0a6 | base64 3.8.3 | base85 3.8.3
-Encode: .204ms per run | .028ms | .0014ms | .067ms
-Decode: .138ms per run | .014s | .0012ms | .023ms
-Total:  .342ms per run | .052ms | .0026ms | .090ms
+Encode: .204ms per run | .028ms | .0014ms | .025ms
+Decode: .138ms per run | .014ms | .0012ms | .042ms
+Total:  .342ms per run | .052ms | .0026ms | .067ms
 ```
 
 Results:
-Tentatively, base64 > Cython 3.0a6 > base85 > Python 3.8.3. I haven't tested memory usage or CPU usage though, so this could be a flawed benchmark. In addition, one very interesting thing I noticed was that the base64 encoding/decoding speed stayed basically the same whether 180 bytes or 20, while base85 and Cython scaled about the same, and Python scaled quickly. I'll make a desmos graph of my results soon and link it here.
+Tentatively, base64 > Cython 3.0a6 > base85 > Python 3.8.3. I haven't tested memory usage or CPU usage though, so this could be a flawed benchmark. In addition, one very interesting thing I noticed was that the base64 encoding/decoding speed stayed basically the same whether 180 bytes or 20, while base85 scaled slower than Cython, and Python scaled quickly. I'll make a desmos graph of my results soon and link it here.
 
 # Why I Did This
 I learned to code Python (horribly) by playing with the internals of a friend's Discord bot, and it just so happened that they decided to store their data in a database with jsonpickle-encoded strings. While I migrated my fork of the bot to not use jsonpickle and make the db atomic, I have another friend who still uses jsonpickle on their fork, and their database is huge. I figured that by adapting base122 to Python, they'd switch over from using base64 encoding for the internal steps in jsonpickle to base122, because a potential switch to base85 wasn't that big of a deal for them (33% bloat to 25% for base85, compared to 14% for base122).
