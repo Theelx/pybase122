@@ -20,9 +20,9 @@ The pybase122.pyx is much faster when compiled with Cython 3.0a6 vs the normal s
 180 bytes
 ```
 Python 3.8.3 | Cython 3.0a6 | base64 3.8.3 | base85 3.8.3
-Encode: .204ms per run | .028ms | .0014ms | .090ms
-Decode: .138ms per run | .014ms | .0012ms | .052ms
-Total:  .342ms per run | .052ms | .0026ms | .142ms
+Encode: .204ms per run | .028ms | .0014ms | .067ms
+Decode: .138ms per run | .014s | .0012ms | .023ms
+Total:  .342ms per run | .052ms | .0026ms | .090ms
 ```
 
 Results:
