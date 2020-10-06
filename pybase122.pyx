@@ -2,6 +2,7 @@
 cimport cython
 import sys
 from libcpp.vector cimport vector
+from libcpp.list cimport list as cpplist
 
 PY2 = sys.version_info[0] == 2
 
