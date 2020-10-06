@@ -20,10 +20,11 @@ The pybase122.pyx is much faster when compiled with Cython 3.0a6 vs the normal s
 Results:
 Tentatively, base64 > Cython 3.0a6 => base85 > Python 3.8.3. I haven't tested memory usage or CPU usage though, so this could be a flawed benchmark. In addition, one very interesting thing I noticed was that the base64 encoding/decoding speed stayed basically the same whether 180 bytes or 20, while base85 scaled between slightly slower than and about the same as Cython, and Python scaled quickly.
 
-Desmos Graphs of Various Byte Input Sizes:
-https://www.desmos.com/calculator/oeqwthbpnb - encode()
-https://www.desmos.com/calculator/li4bs9nngf - encode(decode())/Total
-If someone wants to subtract the encoding from Total to make Decoding, feel free.
+Desmos Graphs of Various Byte Input Sizes:  
+https://www.desmos.com/calculator/oeqwthbpnb - encode()  
+https://www.desmos.com/calculator/li4bs9nngf - encode(decode()) a.k.a. Total  
+If someone wants to subtract the encoding from Total to make Decoding, feel free.  
+**These benchmarks are using the scripts as they were on 6/10/2020 (dd/mm/yyyy)**
 
 # Why I Did This
 I learned to code Python (horribly) by playing with the internals of a friend's Discord bot, and it just so happened that they decided to store their data in a database with jsonpickle-encoded strings. While I migrated my fork of the bot to not use jsonpickle and make the db atomic, I have another friend who still uses jsonpickle on their fork, and their database is huge. I figured that by adapting base122 to Python, they'd switch over from using base64 encoding for the internal steps in jsonpickle to base122, because a potential switch to base85 wasn't that big of a deal for them (33% bloat to 25% for base85, compared to 14% for base122).
@@ -47,4 +48,4 @@ My response:
 # Contribute
 All contributions are welcome! If you want to add something or speed something up*, feel free to submit a pull request, I'll try to check it as soon as I can!
 
-*If you want to speed something up, please include timing for affected lines from line_profiler, which can be found [here](https://github.com/pyutils/line_profiler). If the new code significantly impacts readability, please include it as a new file.
+*If you want to speed something up, please include timing for affected lines from line_profiler, which can be found [here](https://github.com/pyutils/line_profiler). If the new code significantly impacts readability or requires a new dependency, please include it as a new file.
