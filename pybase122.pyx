@@ -1,18 +1,18 @@
 # distutils: language=c++
 cimport cython
+from libc.stdlib cimport abort, malloc, free
 import sys
-from libcpp.vector cimport vector
+import time  # for performance timing
+from libcpp.string cimport string
 from libcpp.list cimport list as cpplist
+from libcpp.vector cimport vector
 
 PY2 = sys.version_info[0] == 2
 
 class SpeedException(Exception):
     pass
 
-# to get maximal performance we need to implement % as a simple function
-# speeds it up by like 2x when compiled
 cdef int rshift(long int val, long int n) nogil:
-    # this could be simplified into a single expression with ternaries but I wanted it more readable
     if val >= 0:
         return val >> n
     else:
@@ -21,7 +21,7 @@ cdef int rshift(long int val, long int n) nogil:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-cdef tuple get7(int rawDataLen, int curIndex, int curBit, bytearray rawDataBytes):
+cdef (int, int, int) get7(int rawDataLen, int curIndex, int curBit, bytearray rawDataBytes):
     cdef int firstPart, secondPart
 
     if curIndex >= rawDataLen:
@@ -76,8 +76,10 @@ cpdef bytearray encode(str rawData, bint warnings=True, bint speed=True):
     kShortened = 0b111  # last two-byte char encodes <= 7 bits
     curIndex = curBit = 0
 
+    #    for loops don't work because they cut off a variable amount of end letters for some reason, but they'd speed it up immensely
     while True:
         bits, curIndex, curBit = get7(len(rawDataBytes), curIndex, curBit, rawDataBytes)
+        #bits, curIndex, curBit = no[0], no[1], no[2]
         if not bits:
             break
         if bits in kIllegals:
@@ -89,6 +91,7 @@ cpdef bytearray encode(str rawData, bint warnings=True, bint speed=True):
             outData.push_back(bits)
             continue
         nextBits, curIndex, curBit = get7(len(rawDataBytes), curIndex, curBit, rawDataBytes)
+        #nextBits, curIndex, curBit = no[0], no[1], no[2]
         b1 = 0b11000010
         b2 = 0b10000000
         if not nextBits:
@@ -107,17 +110,16 @@ cpdef bytearray encode(str rawData, bint warnings=True, bint speed=True):
 @cython.wraparound(False)
 @cython.cdivision(True)
 cpdef str decode(bytearray strData, bint warnings=True):
-    cdef vector[int] kIllegals
+    cdef list kIllegals = [0, 10, 13, 34, 38, 92]
     cdef list decoded = []
     cdef bytes illegalIndex
-    cdef int decodedIndex, curByte, bitOfByte, kShortened
+    cdef int decodedIndex, curByte, bitOfByte, kShortened, int_strData
 
     if PY2 and warnings:
         raise NotImplementedError(
             "This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False."
         )
     # null, newline, carriage return, double quote, ampersand, backslash
-    kIllegals = [0, 10, 13, 34, 38, 92]
     kShortened = 0b111  # last two-byte char encodes <= 7 bits
     decodedIndex = curByte = bitOfByte = 0
 
@@ -126,11 +128,12 @@ cpdef str decode(bytearray strData, bint warnings=True):
         raise TypeError("You can only decode an encoded string!")
 
     for i in range(len(strData)):
-        if strData[i] > 127:
-            illegalIndex = (rshift(strData[i], 0x100000000) >> 8) & 7
+        int_strData = int(strData[i])
+        if int_strData > 127:
+            illegalIndex = (rshift(int_strData, 0x100000000) >> 8) & 7
             if illegalIndex != kShortened:
                 curByte, bitOfByte, decoded = push7(chr(kIllegals[illegalIndex]), curByte, bitOfByte, decoded)
-            curByte, bitOfByte, decoded = push7(strData[i] & 127, curByte, bitOfByte, decoded)
+            curByte, bitOfByte, decoded = push7(int_strData & 127, curByte, bitOfByte, decoded)
         else:
-            curByte, bitOfByte, decoded = push7(strData[i], curByte, bitOfByte, decoded)
+            curByte, bitOfByte, decoded = push7(int_strData, curByte, bitOfByte, decoded)
     return "".join([chr(letter) for letter in decoded])
