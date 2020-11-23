@@ -2,8 +2,10 @@ import base64  # for converting b64 strings to b122
 import sys
 
 PY2 = sys.version_info[0] == 2
-# null, newline, carriage return, double quote, ampersand, backslash
 kShortened = 0b111  # last two-byte char encodes <= 7 bits
+kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
+kIllegalsSet = {chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)}
+
 
 def encode(rawData, warnings=True):
     if PY2 and warnings:
@@ -14,7 +16,7 @@ def encode(rawData, warnings=True):
         rawData = bytearray(rawData, "UTF-8")
     else:
         raise TypeError("rawData must be a string!")
-    kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
+    # null, newline, carriage return, double quote, ampersand, backslash
     curIndex = curBit = 0
     outData = bytearray()
 
@@ -22,23 +24,27 @@ def encode(rawData, warnings=True):
         nonlocal curIndex, curBit, rawData
         if curIndex >= rawDataLen:
             return False
-        firstPart = ((((0b11111110 % 0x100000000) >> curBit) & rawData[curIndex]) << curBit) >> 1
+        firstPart = (
+            (((0b11111110 % 0x100000000) >> curBit) & rawData[curIndex]) << curBit
+        ) >> 1
         curBit += 7
-        if curBit < 8:
+        if curBit < 8 or curIndex >= rawDataLen:
             return firstPart
         curBit -= 8
         curIndex += 1
         if curIndex >= rawDataLen:
             return firstPart
-        secondByte = rawData[curIndex]
-        secondPart = ((((0xFF00 % 0x100000000) >> curBit) & secondByte) & 0xFF) >> (8 - curBit)
+        secondPart = (
+            (((0xFF00 % 0x100000000) >> curBit) & rawData[curIndex]) & 0xFF
+        ) >> (8 - curBit)
         return firstPart | secondPart
 
+    # for loops don't work because they cut off a variable amount of end letters for some reason, but they'd speed it up immensely
     while True:
         bits = get7(len(rawData))
         if not bits:
             break
-        if bits in kIllegals:
+        if bits in kIllegalsSet:
             illegalIndex = kIllegals.index(bits)
         else:
             outData.append(bits)
@@ -57,16 +63,17 @@ def encode(rawData, warnings=True):
         outData += [b1, b2]
     return outData
 
+
 def decode(strData, warnings=True):
     if PY2 and warnings:
         raise NotImplementedError(
             "This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False."
         )
-    kIllegals = [chr(0), chr(10), chr(13), chr(34), chr(38), chr(92)]
+    # null, newline, carriage return, double quote, ampersand, backslash
     decoded = []
     decodedIndex = curByte = bitOfByte = 0
 
-    # this could test for every letter in the for loop, but I took it out of the loop for performance
+    # this could test for every letter in the for loop, but I took it out for performance
     if not isinstance(strData[0], int):
         raise TypeError("You can only decode an encoded string!")
 
@@ -83,7 +90,7 @@ def decode(strData, warnings=True):
 
     for i in range(len(strData)):
         if strData[i] > 127:
-            illegalIndex = rshift(strData[i], 8) & 7
+            illegalIndex = ((strData[i] % 0x100000000) >> 8) & 7
             if illegalIndex != kShortened:
                 push7(kIllegals[illegalIndex])
             push7(strData[i] & 127)
