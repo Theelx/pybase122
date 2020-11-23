@@ -1,13 +1,11 @@
 # distutils: language=c++
+# cython: boundscheck=False, wraparound=False, cdivision=True
 cimport cython
 import sys
 import time  # for performance timing
 from libcpp.vector cimport vector
 
 PY2 = sys.version_info[0] == 2
-
-class SpeedException(Exception):
-    pass
 
 # null, newline, carriage return, double quote, ampersand, backslash
 cdef int[6] illegalByteByIndex
@@ -32,9 +30,6 @@ cdef int rshift(long int val, long int n) nogil:
     else:
         return (val + <int>0x100000000) >> n
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
 cdef (int, int, int) get7(int rawDataLen, int curIndex, int curBit, bytearray rawDataBytes) nogil:
     cdef int firstPart, secondPart
 
@@ -53,9 +48,6 @@ cdef (int, int, int) get7(int rawDataLen, int curIndex, int curBit, bytearray ra
     secondPart = (((rshift(0xFF00, 0x100000000) >> curBit) & rawDataBytes[curIndex]) & 0xFF) >> (8 - curBit)
     return (firstPart | secondPart), curIndex, curBit
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
 cdef (int, int) push7(int byte, int curByte, int bitOfByte, vector[int]& decoded):
     byte <<= 1
     curByte |= rshift(byte, 0x100000000) >> bitOfByte
@@ -66,9 +58,6 @@ cdef (int, int) push7(int byte, int curByte, int bitOfByte, vector[int]& decoded
         curByte = (byte << (7 - bitOfByte)) & 255
     return (curByte, bitOfByte)
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
 cpdef bytearray encode(str rawData, bint warnings=True):
     cdef int curIndex, curBit, rawDataLen, illegalIndex, kShortened, b1, b2, bits, nextBits
     cdef bytearray firstPart
@@ -112,9 +101,6 @@ cpdef bytearray encode(str rawData, bint warnings=True):
         outData.append(b2)
     return outData
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
 cpdef str decode(bytearray strData, bint warnings=True):
     cdef vector[int] decoded
     cdef int illegalIndex
@@ -145,3 +131,4 @@ cpdef str decode(bytearray strData, bint warnings=True):
         else:
             curByte, bitOfByte = push7(int_strData, curByte, bitOfByte, decoded)
     return "".join(map(chr, decoded))
+
