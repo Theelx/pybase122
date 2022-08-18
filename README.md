@@ -22,15 +22,15 @@ cd pybase122
 pip install -U --pre cython
 python3 setup_cython.py build_ext --inplace
 ```
-Once the last command is complete, you can put `import pybase122` into any of your scripts and run its functions much quicker!
+Once the last command is complete, you can put `import cybase122` into any of your scripts and run its functions much quicker!
 
 Note: It is highly recommended for you to install Cython>=3.0.0a11, as the Cython 3.0 series is essentially stable, even though it is called "alpha". This repo has only been tested on Cython==3.0.0a11.
 
 # Performance
-The pybase122.pyx is much faster when compiled with Cython 3.0a6 vs the normal script. It runs about 6x faster than the other script on my test string of 10000 runs of 25 words/180 bytes of Lorem Ipsum text on a 3-core, 3.8GHz AMD Ryzen 9 3900X VPS. I first set the string as the text encoded/decoded with ascii, then ran decode(encode(TEST_STR)), and timed 10000 runs of that.
+The cybase122.pyx script is much faster when compiled with Cython 3.0.0a11 vs the normal script. It runs about 6x faster than the other script on my test string of 10000 runs of 25 words/180 bytes of Lorem Ipsum text on a 3-core, 3.8GHz AMD Ryzen 9 3900X VPS. I first set the string as the text encoded/decoded with ascii, then ran decode(encode(TEST_STR)), and timed 10000 runs of that.
 
 Results:
-Tentatively, base64 > Cython 3.0a6 => base85 > Python 3.8.3. I haven't tested memory usage or CPU usage though, so this could be a flawed benchmark. In addition, one very interesting thing I noticed was that the base64 encoding/decoding speed stayed basically the same whether 180 bytes or 20, while base85 scaled between slightly slower than and about the same as Cython, and Python scaled quickly.
+Tentatively, base64 > Cython 3.0.0a11 => base85 > Python 3.8.3. I haven't tested memory usage or CPU usage though, so this could be a flawed benchmark. In addition, one very interesting thing I noticed was that the base64 encoding/decoding speed stayed basically the same whether 180 bytes or 20, while base85 scaled between slightly slower than and about the same as Cython, and Python scaled quickly.
 
 Desmos Graphs of Various Byte Input Sizes:  
 https://www.desmos.com/calculator/oeqwthbpnb - encode()  
