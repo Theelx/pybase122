@@ -2,7 +2,6 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True
 cimport cython
 import sys
-import time  # for performance timing
 from libcpp.vector cimport vector
 
 PY2 = sys.version_info[0] == 2
