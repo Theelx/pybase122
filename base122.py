@@ -23,36 +23,36 @@ def encode(rawData, warnings=True):
     def get7(rawDataLen):
         nonlocal curIndex, curBit, rawData
         if curIndex >= rawDataLen:
-            return False
+            return False, 0
         firstPart = (
             (((0b11111110 % 0x100000000) >> curBit) & rawData[curIndex]) << curBit
         ) >> 1
         curBit += 7
-        if curBit < 8 or curIndex >= rawDataLen:
-            return firstPart
+        if curBit < 8:
+            return True, firstPart
         curBit -= 8
         curIndex += 1
         if curIndex >= rawDataLen:
-            return firstPart
+            return True, firstPart
         secondPart = (
             (((0xFF00 % 0x100000000) >> curBit) & rawData[curIndex]) & 0xFF
         ) >> (8 - curBit)
-        return firstPart | secondPart
+        return True, firstPart | secondPart
 
     # for loops don't work because they cut off a variable amount of end letters for some reason, but they'd speed it up immensely
     while True:
-        bits = get7(len(rawData))
-        if not bits:
+        retBits, bits = get7(len(rawData))
+        if not retBits:
             break
         if bits in kIllegalsSet:
             illegalIndex = kIllegals.index(bits)
         else:
             outData.append(bits)
             continue
-        nextBits = get7(len(rawData))
+        retNext, nextBits = get7(len(rawData))
         b1 = 0b11000010
         b2 = 0b10000000
-        if not nextBits:
+        if not retNext:
             b1 |= (0b111 & kShortened) << 2
             nextBits = bits
         else:
@@ -71,7 +71,7 @@ def decode(strData, warnings=True):
         )
     # null, newline, carriage return, double quote, ampersand, backslash
     decoded = []
-    decodedIndex = curByte = bitOfByte = 0
+    curByte = bitOfByte = 0
 
     # this could test for every letter in the for loop, but I took it out for performance
     if not isinstance(strData[0], int):
