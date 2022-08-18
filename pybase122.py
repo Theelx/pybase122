@@ -13,7 +13,7 @@ def encode(rawData, warnings=True):
             "This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False."
         )
     if isinstance(rawData, str):
-        rawData = bytearray(rawData, "UTF-8"
+        rawData = bytearray(rawData, "UTF-8")
         
     else:
         raise TypeError("rawData must be a string!")
