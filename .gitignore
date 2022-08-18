@@ -1,4 +1,5 @@
 *.cpp
 *.so
+*.html
 .python-version
 build
