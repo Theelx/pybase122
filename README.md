@@ -12,7 +12,19 @@ print(decode(encode(example_str)) # 'hello world!'
 print(decode(example_str) # TypeError: You can only decode an encoded string!
 ```
 Do not use anything from original_base122.py unless you're comparing, as that's the version I transliterated that stuck almost exactly to the original NodeJS version but in Python.
-You should use the current base122.py, as that's quite a bit faster due to some optimizations I made for Python.
+You should use the current base122.py, as that's quite a bit faster due to some optimizations I made for Python, and original_base122.py has a subtle bug in its `get7` method.
+
+# How to Build
+To build the Cython version, run the following steps:
+```bash
+git clone https://github.com/Theelx/pybase122.git
+cd pybase122
+pip install -U --pre cython
+python3 setup.py build_ext --inplace
+```
+Once the last command is complete, you can put `import pybase122` into any of your scripts and run its functions much quicker!
+
+Note: It is highly recommended for you to install Cython>=3.0.0a11, as the Cython 3.0 series is essentially stable, even though it is called "alpha". This repo has only been tested on Cython==3.0.0a11.
 
 # Performance
 The pybase122.pyx is much faster when compiled with Cython 3.0a6 vs the normal script. It runs about 6x faster than the other script on my test string of 10000 runs of 25 words/180 bytes of Lorem Ipsum text on a 3-core, 3.8GHz AMD Ryzen 9 3900X VPS. I first set the string as the text encoded/decoded with ascii, then ran decode(encode(TEST_STR)), and timed 10000 runs of that.
@@ -48,4 +60,4 @@ My response:
 # Contribute
 All contributions are welcome! If you want to add something or speed something up*, feel free to submit a pull request, I'll try to check it as soon as I can!
 
-*If you want to speed something up, please include timing for affected lines from line_profiler, which can be found [here](https://github.com/pyutils/line_profiler). If the new code significantly impacts readability or requires a new dependency, please include it as a new file.
+*If you want to speed something up, please include timing for affected lines from line_profiler, which can be found [here](https://github.com/Theelx/line_profiler). If the new code significantly impacts readability or requires a new dependency, please include it as a new file.
