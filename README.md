@@ -20,7 +20,7 @@ To build the Cython version, run the following steps:
 git clone https://github.com/Theelx/pybase122.git
 cd pybase122
 pip install -U --pre cython
-python3 setup.py build_ext --inplace
+python3 setup_cython.py build_ext --inplace
 ```
 Once the last command is complete, you can put `import pybase122` into any of your scripts and run its functions much quicker!
 
