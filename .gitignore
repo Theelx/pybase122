@@ -1,0 +1,4 @@
+*.cpp
+*.so
+.python-version
+build
