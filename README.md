@@ -4,7 +4,7 @@ This is a simple Python 3 implementation of the base122 binary-to-text encoding 
 # How To Use
 base122.py contains an encode method and a decode method. It does not have the encode/decode file feature of kevinAlbs' version.
 ```py
-from base122 import encode, decode
+from pybase122 import encode, decode
 
 example_str = 'hello world!'
 print(encode(example_str)) # bytearray(b'4\x19-Fc<@w7\\MF!\x04')
@@ -12,7 +12,7 @@ print(decode(encode(example_str))) # 'hello world!'
 print(decode(example_str)) # TypeError: You can only decode an encoded string!
 ```
 Do not use anything from original_base122.py unless you're comparing, as that's the version I transliterated that stuck almost exactly to the original NodeJS version but in Python.
-You should use the current base122.py, as that's quite a bit faster due to some optimizations I made for Python, and original_base122.py has a subtle bug in its `get7` method.
+You should use the current pybase122.py, as that's quite a bit faster due to some optimizations I made for Python, and original_base122.py has a subtle bug in its `get7` method.
 
 # How to Build
 To build the Cython version, run the following steps:
@@ -44,18 +44,6 @@ While my rationale for making this may end up being pointless if they stop using
 
 # Issues
 Please state the Python version you're using, provide a description of the issue, and give the shortest/simplest example you can with the results.
-Example:
-"Hi, I'm using Python 3.9 and the text comes out garbled when I decode an encoded string:"
-```py
-from base122 import encode, decode
-
-example_str = 'мир привет!' # 'hello world!'
-print(encode(example_str)) # bytearray(b'h/\x1a\x0bFF')
-print(decode(encode(example_str)) # Ð¼Ð¸Ñ
-```
-
-My response:
-"Hello, base122 doesn't work with utf-8 strings because it isn't 8-bit clean. Please use only ascii with this. Thanks for trying it out though!"
 
 # Contribute
 All contributions are welcome! If you want to add something or speed something up*, feel free to submit a pull request, I'll try to check it as soon as I can!

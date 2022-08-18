@@ -13,7 +13,8 @@ def encode(rawData, warnings=True):
             "This hasn't been tested on Python2 yet! Turn this warning off by passing warnings=False."
         )
     if isinstance(rawData, str):
-        rawData = bytearray(rawData, "UTF-8")
+        rawData = bytearray(rawData, "UTF-8"
+        
     else:
         raise TypeError("rawData must be a string!")
     # null, newline, carriage return, double quote, ampersand, backslash
@@ -96,9 +97,9 @@ def decode(strData, warnings=True):
             push7(strData[i] & 127)
         else:
             push7(strData[i])
-    return "".join([chr(letter) for letter in decoded])
+    return bytearray(decoded).decode('utf-8')
 
 
 # helper function for people already storing data in base64
-def encodeFromBase64(base64str):
+def encode_from_base64(base64str):
     return encode(base64.b64decode(base64str))

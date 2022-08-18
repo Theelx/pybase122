@@ -129,5 +129,5 @@ cpdef str decode(bytearray strData, bint warnings=True):
             curByte, bitOfByte = push7(int_strData & 127, curByte, bitOfByte, decoded)
         else:
             curByte, bitOfByte = push7(int_strData, curByte, bitOfByte, decoded)
-    return "".join(map(chr, decoded))
+    return bytearray(decoded).decode('utf-8')
 

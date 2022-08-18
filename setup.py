@@ -29,6 +29,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
+    scripts=["pybase122.py"],
     setup_requires=["Cython>=3.0.0a11"],
     python_requires=">=3.5",
     ext_modules=cythonize(
