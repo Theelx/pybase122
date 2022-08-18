@@ -8,8 +8,8 @@ from base122 import encode, decode
 
 example_str = 'hello world!'
 print(encode(example_str)) # bytearray(b'4\x19-Fc<@w7\\MF!\x04')
-print(decode(encode(example_str)) # 'hello world!'
-print(decode(example_str) # TypeError: You can only decode an encoded string!
+print(decode(encode(example_str))) # 'hello world!'
+print(decode(example_str)) # TypeError: You can only decode an encoded string!
 ```
 Do not use anything from original_base122.py unless you're comparing, as that's the version I transliterated that stuck almost exactly to the original NodeJS version but in Python.
 You should use the current base122.py, as that's quite a bit faster due to some optimizations I made for Python, and original_base122.py has a subtle bug in its `get7` method.
