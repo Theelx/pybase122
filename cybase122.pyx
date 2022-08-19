@@ -48,8 +48,6 @@ cdef (bint, int, int, int) get7(int rawDataLen, int curIndex, int curBit, bytear
     secondPart = (((rshift(0xFF00, 0x100000000) >> curBit) & rawDataBytes[curIndex]) & 0xFF) >> (8 - curBit)
     return True, (firstPart | secondPart), curIndex, curBit
 
-@cython.exceptval(check=False)
-@cython.cpp_locals(False)
 cdef (int, int, int) push7(int j, int byte, int curByte, int bitOfByte, vector[int]& decoded) nogil:
     byte <<= 1
     curByte |= rshift(byte, 0x100000000) >> bitOfByte
@@ -128,6 +126,5 @@ cpdef str decode(bytearray strData, bint warnings=True):
     decoded.resize(len_strData)
     j = cdecode(i, curByte, bitOfByte, len_strData, strData, decoded)
     decoded.resize(j)
-    decoded.shrink_to_fit()
     return bytearray(decoded).decode('utf-8')
 
