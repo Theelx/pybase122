@@ -1,5 +1,6 @@
 *.cpp
 *.so
 *.html
+*.egg-info
 .python-version
 build

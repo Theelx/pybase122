@@ -14,7 +14,6 @@ def encode(rawData, warnings=True):
         )
     if isinstance(rawData, str):
         rawData = bytearray(rawData, "UTF-8")
-        
     else:
         raise TypeError("rawData must be a string!")
     # null, newline, carriage return, double quote, ampersand, backslash
@@ -43,14 +42,20 @@ def encode(rawData, warnings=True):
     # for loops don't work because they cut off a variable amount of end letters for some reason, but they'd speed it up immensely
     while True:
         retBits, bits = get7(len(rawData))
+        print("bits:", bits)
+        print("retBits:", retBits)
         if not retBits:
             break
         if bits in kIllegalsSet:
             illegalIndex = kIllegals.index(bits)
+            #print(bits, kIllegalsSet, illegalIndex)
         else:
+            #print(bits, kIllegalsSet)
             outData.append(bits)
             continue
         retNext, nextBits = get7(len(rawData))
+        print("retNext:", retNext)
+        print("nextBits:", nextBits)
         b1 = 0b11000010
         b2 = 0b10000000
         if not retNext:
@@ -61,7 +66,9 @@ def encode(rawData, warnings=True):
         firstBit = 1 if (nextBits & 0b01000000) > 0 else 0
         b1 |= firstBit
         b2 |= nextBits & 0b00111111
+        print("b1b2", b1, b2)
         outData += [b1, b2]
+    print(outData)
     return outData
 
 
@@ -97,7 +104,7 @@ def decode(strData, warnings=True):
             push7(strData[i] & 127)
         else:
             push7(strData[i])
-    return bytearray(decoded).decode('utf-8')
+    return bytearray(decoded).decode("utf-8")
 
 
 # helper function for people already storing data in base64

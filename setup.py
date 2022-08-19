@@ -5,7 +5,7 @@ try:
 except (ImportError, NameError):
     # skip cythonizing
     cythonize = lambda x: 0
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 
 with open("README.md", "r+") as f:
     long_description = f.read()
@@ -40,7 +40,7 @@ setup(
             # consider including -march=native if it makes a speed difference
             # and if portability isn't a concern for users
             extra_compile_args=["-Wno-sign-compare", "-flto", "-pipe"],
-            compiler_directives={'language_level': 3, "infer_types": True}
+            compiler_directives={"language_level": 3, "infer_types": True},
         )
     ),
 )
